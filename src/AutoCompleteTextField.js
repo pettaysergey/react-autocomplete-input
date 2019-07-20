@@ -68,6 +68,8 @@ class AutocompleteTextField extends React.Component {
     this.updateHelper = this.updateHelper.bind(this);
     this.resetHelper = this.resetHelper.bind(this);
     this.renderAutocompleteList = this.renderAutocompleteList.bind(this);
+    this.customOnChange = this.customOnChange.bind(this);
+    this.customClick = this.customClick.bind(this);
 
     this.state = {
       helperVisible: false,
@@ -257,7 +259,7 @@ class AutocompleteTextField extends React.Component {
   }
 
   // for customDropdown
-  customOnChange = value => {
+  customOnChange(value) {
     const { options } = this.props;
     const filteredSuggestions = options.filter(
       suggestion => suggestion.toLowerCase().indexOf(value.toLowerCase()) > -1
@@ -269,7 +271,7 @@ class AutocompleteTextField extends React.Component {
       showSuggestions: true,
       value
     });
-  };
+  }
 
   handleKeyDown(event) {
     const { helperVisible } = this.state;
@@ -315,7 +317,7 @@ class AutocompleteTextField extends React.Component {
     this.enableSpaceRemovers = true;
   }
 
-  customClick = (e, index) => {
+  customClick(e) {
     this.setState({
       activeSuggestion: 0,
       filteredSuggestions: [],
@@ -323,7 +325,7 @@ class AutocompleteTextField extends React.Component {
       // value: e.currentTarget.innerText
     });
     this.props.onChange(e.currentTarget.innerText);
-  };
+  }
 
   updateCaretPosition(caret) {
     this.setState({ caret }, () =>
@@ -488,7 +490,7 @@ class AutocompleteTextField extends React.Component {
                   <li
                     className={className}
                     key={suggestion}
-                    onClick={e => this.customClick(e, index)}
+                    onClick={e => this.customClick(e)}
                   >
                     {suggestion}
                   </li>
