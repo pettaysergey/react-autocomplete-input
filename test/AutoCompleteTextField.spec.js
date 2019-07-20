@@ -1,590 +1,590 @@
-import React from 'react';
-import chai, { expect } from 'chai';
-import chaiEnzyme from 'chai-enzyme';
-import { configure, mount, render } from 'enzyme';
-import jsdom from 'jsdom';
-import { spy } from 'sinon';
-import Adapter from 'enzyme-adapter-react-16';
+// import React from 'react';
+// import chai, { expect } from 'chai';
+// import chaiEnzyme from 'chai-enzyme';
+// import { configure, mount, render } from 'enzyme';
+// import jsdom from 'jsdom';
+// import { spy } from 'sinon';
+// import Adapter from 'enzyme-adapter-react-16';
 
-configure({ adapter: new Adapter() });
+// configure({ adapter: new Adapter() });
 
-const KEY_UP = 38;
-const KEY_DOWN = 40;
-const KEY_RETURN = 13;
-const KEY_ENTER = 14;
-const KEY_ESCAPE = 27;
+// const KEY_UP = 38;
+// const KEY_DOWN = 40;
+// const KEY_RETURN = 13;
+// const KEY_ENTER = 14;
+// const KEY_ESCAPE = 27;
 
-chai.use(chaiEnzyme());
+// chai.use(chaiEnzyme());
 
-const doc = new jsdom.JSDOM('<!doctype html><html><body><div id="app"></div></body></html>');
+// const doc = new jsdom.JSDOM('<!doctype html><html><body><div id="app"></div></body></html>');
 
-global.document = doc.window.document;
-global.window = doc.window;
-global.navigator = doc.window.navigator;
+// global.document = doc.window.document;
+// global.window = doc.window;
+// global.navigator = doc.window.navigator;
 
-// we need to define these two functions to satisfy textarea-caret and mitigate its bug
-global.window.getComputedStyle = () => { return {}; };
-global.getComputedStyle = () => { return {}; };
+// // we need to define these two functions to satisfy textarea-caret and mitigate its bug
+// global.window.getComputedStyle = () => { return {}; };
+// global.getComputedStyle = () => { return {}; };
 
-// We need to have `document` and `window` in global scope before requiring TextField
-const TextField = require('../dist/bundle').default;
+// // We need to have `document` and `window` in global scope before requiring TextField
+// const TextField = require('../dist/bundle').default;
 
-function createOnChangeEvent(value) {
-  return {
-    target: {
-      selectionStart: value.length,
-      selectionEnd: value.length,
-      value
-    }
-  };
-}
+// function createOnChangeEvent(value) {
+//   return {
+//     target: {
+//       selectionStart: value.length,
+//       selectionEnd: value.length,
+//       value
+//     }
+//   };
+// }
 
-describe('className and style are propagated', () => {
-  it('className: rnd-1234 -> .rnd-1234', () => {
-    const component = render(<TextField className="rnd-1234" />);
+// describe('className and style are propagated', () => {
+//   it('className: rnd-1234 -> .rnd-1234', () => {
+//     const component = render(<TextField className="rnd-1234" />);
 
-    expect(component.find('.rnd-1234')).to.have.length(1);
-  });
+//     expect(component.find('.rnd-1234')).to.have.length(1);
+//   });
 
-  it('style: { zIndex: "-9876"} => style={"z-index:-9876"}', () => {
-    const component = render(<TextField style={{ zIndex: '-9876' }} />);
+//   it('style: { zIndex: "-9876"} => style={"z-index:-9876"}', () => {
+//     const component = render(<TextField style={{ zIndex: '-9876' }} />);
 
-    expect(component.find('textarea')).to.have.attr('style').match(/\-9876/);
-  });
-});
+//     expect(component.find('textarea')).to.have.attr('style').match(/\-9876/);
+//   });
+// });
 
-describe('option list is shown for different trigger strings', () => {
-  it('trigger @', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab"]} />);
+// describe('option list is shown for different trigger strings', () => {
+//   it('trigger @', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@'));
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
-  });
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//   });
 
-  it('trigger @@ 1/2', () => {
-    const component = mount(<TextField trigger="@@" options={["aa", "ab"]} />);
+//   it('trigger @@ 1/2', () => {
+//     const component = mount(<TextField trigger="@@" options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@'));
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
-  });
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//   });
 
-  it('trigger @@ 2/2', () => {
-    const component = mount(<TextField trigger="@@" options={["aa", "ab"]} />);
+//   it('trigger @@ 2/2', () => {
+//     const component = mount(<TextField trigger="@@" options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@@'));
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
-  });
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//   });
 
-  it('trigger empty only with first character 1/2', () => {
-    const component = mount(<TextField trigger="" options={["aa", "ab"]} />);
+//   it('trigger empty only with first character 1/2', () => {
+//     const component = mount(<TextField trigger="" options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent(' '));
+//     component.find('textarea').simulate('change', createOnChangeEvent(' '));
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
-  });
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//   });
 
-  it('trigger empty only with first character 2/2', () => {
-    const component = mount(<TextField trigger="" options={["aa", "ab"]} />);
+//   it('trigger empty only with first character 2/2', () => {
+//     const component = mount(<TextField trigger="" options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent(' a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent(' a'));
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
-  });
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//   });
 
-  it('trigger empty, option list should appear if first letter matched', () => {
-    const component = mount(<TextField options={["aa", "ab"]} trigger="" />);
+//   it('trigger empty, option list should appear if first letter matched', () => {
+//     const component = mount(<TextField options={["aa", "ab"]} trigger="" />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('a'));
 
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(2);
-  });
-});
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(2);
+//   });
+// });
 
-describe('option list is only shown if matched string is longer than minChars', () => {
-  it('does not trigger with minChars 1 and @', () => {
-    const component = mount(<TextField trigger="@" minChars={1} options={["aa", "ab"]} />);
+// describe('option list is only shown if matched string is longer than minChars', () => {
+//   it('does not trigger with minChars 1 and @', () => {
+//     const component = mount(<TextField trigger="@" minChars={1} options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@'));
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
-  });
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//   });
 
-  it('does trigger with minChars 1 and @a', () => {
-    const component = mount(<TextField trigger="@" minChars={1} options={["aa", "ab"]} />);
+//   it('does trigger with minChars 1 and @a', () => {
+//     const component = mount(<TextField trigger="@" minChars={1} options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
-  });
-});
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//   });
+// });
 
-describe('option list appearance', () => {
-  it('hide if no options available', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab"]} />);
+// describe('option list appearance', () => {
+//   it('hide if no options available', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@ad'));
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
-  });
-});
+//     component.find('textarea').simulate('change', createOnChangeEvent('@ad'));
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//   });
+// });
 
-describe('option list filtering', () => {
-  it('a => 4 options', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd"]} />);
+// describe('option list filtering', () => {
+//   it('a => 4 options', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(4);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(4);
+//   });
 
-  it('ab => 3 options', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd"]} />);
+//   it('ab => 3 options', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
-    component.find('textarea').simulate('change', createOnChangeEvent('@ab'));
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@ab'));
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
+//   });
 
-  it('abc => 2 options', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd"]} />);
+//   it('abc => 2 options', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
-    component.find('textarea').simulate('change', createOnChangeEvent('@abc'));
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(2);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@abc'));
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(2);
+//   });
 
-  it('ABC => 3 options', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "ABCDE"]} />);
+//   it('ABC => 3 options', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "ABCDE"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@ABC'));
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@ABC'));
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
+//   });
 
-  it('abc => 3 options including one uppercase', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "ABCDE"]} />);
+//   it('abc => 3 options including one uppercase', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "ABCDE"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@abc'));
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
-  });
-});
+//     component.find('textarea').simulate('change', createOnChangeEvent('@abc'));
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
+//   });
+// });
 
-describe('max options test', () => {
-  it('options: 3, maxOptions: 5 => 3 options', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab", "abc"]} maxOptions={5} />);
+// describe('max options test', () => {
+//   it('options: 3, maxOptions: 5 => 3 options', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab", "abc"]} maxOptions={5} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
-  });
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
+//   });
 
-  it('options: 5, maxOptions: 3 => 3 options', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "abcde"]} maxOptions={3} />);
+//   it('options: 5, maxOptions: 3 => 3 options', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "abcde"]} maxOptions={3} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
-  });
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
+//   });
 
-  it('options: 10, maxOptions: 0 => 10 options', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "abcde", "ae", "af", "ag", "ah", "az"]} maxOptions={0} />);
+//   it('options: 10, maxOptions: 0 => 10 options', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "abcde", "ae", "af", "ag", "ah", "az"]} maxOptions={0} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(10);
-  });
-});
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(10);
+//   });
+// });
 
-describe('disabled test', () => {
-  it('disabled works', () => {
-    const component = render(<TextField disabled trigger="@" options={["aa", "ab", "abc", "abcd", "abcde"]} />);
+// describe('disabled test', () => {
+//   it('disabled works', () => {
+//     const component = render(<TextField disabled trigger="@" options={["aa", "ab", "abc", "abcd", "abcde"]} />);
 
-    expect(component.find('textarea')).to.have.attr('disabled');
-  });
-});
+//     expect(component.find('textarea')).to.have.attr('disabled');
+//   });
+// });
 
-describe('Component', () => {
-  it('default is textarea', () => {
-    const component = render(<TextField />);
+// describe('Component', () => {
+//   it('default is textarea', () => {
+//     const component = render(<TextField />);
 
-    expect(component.find('textarea')).to.have.length(1);
-  });
+//     expect(component.find('textarea')).to.have.length(1);
+//   });
 
-  it('Component=input => input', () => {
-    const component = render(<TextField Component="input" />);
+//   it('Component=input => input', () => {
+//     const component = render(<TextField Component="input" />);
 
-    expect(component.find('input')).to.have.length(1);
-  });
-});
+//     expect(component.find('input')).to.have.length(1);
+//   });
+// });
 
-describe('regex', () => {
-  it('if matches we can see options', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "abcde"]} regex="^[a-z]+$" />);
+// describe('regex', () => {
+//   it('if matches we can see options', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "abcde"]} regex="^[a-z]+$" />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(5);
-  });
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(5);
+//   });
 
-  it('if not matches, no options rendered', () => {
-    const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "abcde"]} regex="^[b-z]+$" />);
+//   it('if not matches, no options rendered', () => {
+//     const component = mount(<TextField trigger="@" options={["aa", "ab", "abc", "abcd", "abcde"]} regex="^[b-z]+$" />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
-  });
-});
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//   });
+// });
 
-describe('defaultValue and value propagated', () => {
-  it('defaultValue', () => {
-    const component = render(<TextField defaultValue="hello" />);
+// describe('defaultValue and value propagated', () => {
+//   it('defaultValue', () => {
+//     const component = render(<TextField defaultValue="hello" />);
 
-    expect(component.find('textarea')).to.have.html().match(/hello/);
-  });
+//     expect(component.find('textarea')).to.have.html().match(/hello/);
+//   });
 
-  it('value', () => {
-    const component = render(<TextField value="hello" />);
+//   it('value', () => {
+//     const component = render(<TextField value="hello" />);
 
-    expect(component.find('textarea')).to.have.html().match(/hello/);
-  });
-});
+//     expect(component.find('textarea')).to.have.html().match(/hello/);
+//   });
+// });
 
-describe('spaceRemovers', () => {
-  it('space is removed if option matched', () => {
-    const component = mount(<TextField spaceRemovers={[';']} options={["aa", "ab"]} />);
+// describe('spaceRemovers', () => {
+//   it('space is removed if option matched', () => {
+//     const component = mount(<TextField spaceRemovers={[';']} options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
-    component.setState({ helperVisible: true });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.setState({ helperVisible: true });
 
-    component.find('li.active').simulate('click');
-    component.find('textarea').simulate('change', createOnChangeEvent('@aa ;'));
+//     component.find('li.active').simulate('click');
+//     component.find('textarea').simulate('change', createOnChangeEvent('@aa ;'));
 
-    expect(component.find('textarea')).to.have.html().match(/@aa; /);
-  });
+//     expect(component.find('textarea')).to.have.html().match(/@aa; /);
+//   });
 
-  it('space is not removed if option is not matched', () => {
-    const component = mount(<TextField spaceRemovers={[';']} options={["aa", "ab"]} />);
+//   it('space is not removed if option is not matched', () => {
+//     const component = mount(<TextField spaceRemovers={[';']} options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@ad ;'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@ad ;'));
 
-    expect(component.find('textarea')).to.have.html().match(/@ad ;/);
-  });
+//     expect(component.find('textarea')).to.have.html().match(/@ad ;/);
+//   });
 
-  it('space is not removed for double-space situation', () => {
-    const component = mount(<TextField spaceRemovers={[';']} options={["aa", "ab"]} />);
+//   it('space is not removed for double-space situation', () => {
+//     const component = mount(<TextField spaceRemovers={[';']} options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@aa  ;'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@aa  ;'));
 
-    expect(component.find('textarea')).to.have.html().match(/@aa  ;/);
-  });
-});
+//     expect(component.find('textarea')).to.have.html().match(/@aa  ;/);
+//   });
+// });
 
-describe('spacer', () => {
-    it('spacer is inserted after completion', () => {
-        const component = mount(<TextField spacer="x" options={["aa", "ab"]} />);
+// describe('spacer', () => {
+//     it('spacer is inserted after completion', () => {
+//         const component = mount(<TextField spacer="x" options={["aa", "ab"]} />);
 
-        component.find('textarea').simulate('change', createOnChangeEvent('@a'));
-        component.setState({ helperVisible: true });
-        component.find('li.active').simulate('click');
-    
-        expect(component.find('textarea')).to.have.html().match(/@aax/);
-    })
+//         component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//         component.setState({ helperVisible: true });
+//         component.find('li.active').simulate('click');
 
-    it('empty spacer is supported', () => {
-        const component = mount(<TextField spacer="" options={["aa", "ab"]} />);
+//         expect(component.find('textarea')).to.have.html().match(/@aax/);
+//     })
 
-        component.find('textarea').simulate('change', createOnChangeEvent('@a'));
-        component.setState({ helperVisible: true });
-        component.find('li.active').simulate('click');
-    
-        expect(component.find('textarea')).to.have.html().match(/>@aa</);
-    })
-    
-    it('spaceRemovers handle custom spacer', () => {
-        const component = mount(<TextField spaceRemovers={[';']} spacer="x" options={["aa", "ab"]} />);
+//     it('empty spacer is supported', () => {
+//         const component = mount(<TextField spacer="" options={["aa", "ab"]} />);
 
-        component.find('textarea').simulate('change', createOnChangeEvent('@a'));
-        component.setState({ helperVisible: true });
-    
-        component.find('li.active').simulate('click');
-        component.find('textarea').simulate('change', createOnChangeEvent('@aax;'));
-    
-        expect(component.find('textarea')).to.have.html().match(/@aa;x/);
-    })
-    
-    it('spaceRemovers handle empty spacer', () => {
-        const component = mount(<TextField spaceRemovers={[';']} spacer="" options={["aa", "ab"]} />);
+//         component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//         component.setState({ helperVisible: true });
+//         component.find('li.active').simulate('click');
 
-        component.find('textarea').simulate('change', createOnChangeEvent('@a'));
-        component.setState({ helperVisible: true });
-    
-        component.find('li.active').simulate('click');
-        component.find('textarea').simulate('change', createOnChangeEvent('@aa;'));
-    
-        expect(component.find('textarea')).to.have.html().match(/@aa;/);
-    })
-})
+//         expect(component.find('textarea')).to.have.html().match(/>@aa</);
+//     })
 
-describe('onRequestOptions and requestOnlyIfNoOptions', () => {
-  it('expect to call requestOptions with full string after trigger', () => {
-    function handleRequestOptions(str) {
-      expect(str).to.equal('ab');
-    }
+//     it('spaceRemovers handle custom spacer', () => {
+//         const component = mount(<TextField spaceRemovers={[';']} spacer="x" options={["aa", "ab"]} />);
 
-    const component = mount(<TextField trigger="@@" onRequestOptions={handleRequestOptions}/>);
+//         component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//         component.setState({ helperVisible: true });
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@@ab'));
-  });
+//         component.find('li.active').simulate('click');
+//         component.find('textarea').simulate('change', createOnChangeEvent('@aax;'));
 
-  it('expect no call if options left', () => {
-    function handleRequestOptions(str) {
-      throw new Error('unexpected call');
-    }
+//         expect(component.find('textarea')).to.have.html().match(/@aa;x/);
+//     })
 
-    const component = mount(<TextField trigger="@@" onRequestOptions={handleRequestOptions} options={["ab"]} />);
+//     it('spaceRemovers handle empty spacer', () => {
+//         const component = mount(<TextField spaceRemovers={[';']} spacer="" options={["aa", "ab"]} />);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@@ab'));
-  });
+//         component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//         component.setState({ helperVisible: true });
 
-  it ('expect call after trigger in any case if requestOnlyIfNoOptions=true', () => {
-    function handleRequestOptions(str) {
-      expect(str).to.equal('ab');
-    }
+//         component.find('li.active').simulate('click');
+//         component.find('textarea').simulate('change', createOnChangeEvent('@aa;'));
 
-    const component = mount(<TextField trigger="@@" onRequestOptions={handleRequestOptions} options={["ab"]} requestOnlyIfNoOptions />);
+//         expect(component.find('textarea')).to.have.html().match(/@aa;/);
+//     })
+// })
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@@ab'));
-  });
+// describe('onRequestOptions and requestOnlyIfNoOptions', () => {
+//   it('expect to call requestOptions with full string after trigger', () => {
+//     function handleRequestOptions(str) {
+//       expect(str).to.equal('ab');
+//     }
 
-  it ('expect not call if no trigger found and requestOnlyIfNoOptions=true', () => {
-    function handleRequestOptions(str) {
-      throw new Error('unexpected call');
-    }
+//     const component = mount(<TextField trigger="@@" onRequestOptions={handleRequestOptions}/>);
 
-    const component = mount(<TextField trigger="@@" onRequestOptions={handleRequestOptions} options={["ab"]} requestOnlyIfNoOptions />);
+//     component.find('textarea').simulate('change', createOnChangeEvent('@@ab'));
+//   });
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@ab'));
-  });
-});
+//   it('expect no call if options left', () => {
+//     function handleRequestOptions(str) {
+//       throw new Error('unexpected call');
+//     }
 
-describe("events should be propagated", () => {
-  it('onBlur', (done) => {
-    let call = false;
+//     const component = mount(<TextField trigger="@@" onRequestOptions={handleRequestOptions} options={["ab"]} />);
 
-    function handleBlur() {
-      call = true;
-    }
+//     component.find('textarea').simulate('change', createOnChangeEvent('@@ab'));
+//   });
 
-    const component = mount(<TextField trigger="@" options={["aa", "ab"]} onBlur={handleBlur}/>);
+//   it ('expect call after trigger in any case if requestOnlyIfNoOptions=true', () => {
+//     function handleRequestOptions(str) {
+//       expect(str).to.equal('ab');
+//     }
 
-    component.find('textarea').simulate('blur');
+//     const component = mount(<TextField trigger="@@" onRequestOptions={handleRequestOptions} options={["ab"]} requestOnlyIfNoOptions />);
 
-    setTimeout(() => {
-      expect(call).to.equal(true);
-      done();
-    }, 0);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@@ab'));
+//   });
 
-  it('onChange', (done) => {
-    let call = false;
+//   it ('expect not call if no trigger found and requestOnlyIfNoOptions=true', () => {
+//     function handleRequestOptions(str) {
+//       throw new Error('unexpected call');
+//     }
 
-    function handleChange(value) {
-      call = true;
-      expect(value).to.equal('@a');
-    }
+//     const component = mount(<TextField trigger="@@" onRequestOptions={handleRequestOptions} options={["ab"]} requestOnlyIfNoOptions />);
 
-    const component = mount(<TextField trigger="@" options={["aa", "ab"]} onChange={handleChange}/>);
+//     component.find('textarea').simulate('change', createOnChangeEvent('@ab'));
+//   });
+// });
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+// describe("events should be propagated", () => {
+//   it('onBlur', (done) => {
+//     let call = false;
 
-    setTimeout(() => {
-      expect(call).to.equal(true);
-      done();
-    }, 50);
-  });
+//     function handleBlur() {
+//       call = true;
+//     }
 
-  it('onKeyDown', (done) => {
-    let call = false;
+//     const component = mount(<TextField trigger="@" options={["aa", "ab"]} onBlur={handleBlur}/>);
 
-    function handleKeyDown() {
-      call = true;
-    }
+//     component.find('textarea').simulate('blur');
 
-    const component = mount(<TextField trigger="@" options={["aa", "ab"]} onKeyDown={handleKeyDown}/>);
+//     setTimeout(() => {
+//       expect(call).to.equal(true);
+//       done();
+//     }, 0);
+//   });
 
-    component.find('textarea').simulate('keyDown', { keyCode: '13' });
+//   it('onChange', (done) => {
+//     let call = false;
 
-    setTimeout(() => {
-      expect(call).to.equal(true);
-      done();
-    }, 50);
-  });
-});
+//     function handleChange(value) {
+//       call = true;
+//       expect(value).to.equal('@a');
+//     }
 
-describe('selecting option from list', () => {
-  it('mouse click => hide options, update textarea', () => {
-    const component = mount(<TextField options={["aa", "ab"]} />);
+//     const component = mount(<TextField trigger="@" options={["aa", "ab"]} onChange={handleChange}/>);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@'));
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//     setTimeout(() => {
+//       expect(call).to.equal(true);
+//       done();
+//     }, 50);
+//   });
 
-    component.find('.active').simulate('click');
+//   it('onKeyDown', (done) => {
+//     let call = false;
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
-    expect(component.find('textarea')).to.have.html().match(/@aa/);
-  });
+//     function handleKeyDown() {
+//       call = true;
+//     }
 
-  it('return => hide options, update textarea', () => {
-    const component = mount(<TextField options={["aa", "ab"]} />);
+//     const component = mount(<TextField trigger="@" options={["aa", "ab"]} onKeyDown={handleKeyDown}/>);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@'));
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('keyDown', { keyCode: '13' });
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//     setTimeout(() => {
+//       expect(call).to.equal(true);
+//       done();
+//     }, 50);
+//   });
+// });
 
-    component.find('textarea').simulate('keyDown', { keyCode: KEY_RETURN });
+// describe('selecting option from list', () => {
+//   it('mouse click => hide options, update textarea', () => {
+//     const component = mount(<TextField options={["aa", "ab"]} />);
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
-    expect(component.find('textarea')).to.have.html().match(/@aa/);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-  it('enter => hide options, update textarea', () => {
-    const component = mount(<TextField options={["aa", "ab"]} />);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@'));
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('.active').simulate('click');
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//     expect(component.find('textarea')).to.have.html().match(/@aa/);
+//   });
 
-    component.find('textarea').simulate('keyDown', { keyCode: KEY_ENTER });
+//   it('return => hide options, update textarea', () => {
+//     const component = mount(<TextField options={["aa", "ab"]} />);
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
-    expect(component.find('textarea')).to.have.html().match(/@aa/);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-  it('press down => make next list item active', () => {
-    const component = mount(<TextField options={["aa", "az"]} />);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@'));
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('keyDown', { keyCode: KEY_RETURN });
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//     expect(component.find('textarea')).to.have.html().match(/@aa/);
+//   });
 
-    component.find('textarea').simulate('keyDown', { keyCode: KEY_DOWN });
+//   it('enter => hide options, update textarea', () => {
+//     const component = mount(<TextField options={["aa", "ab"]} />);
 
-    expect(component.find('.active')).to.have.html().match(/a.*?>z</);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-  it('press up => make prev list item active', () => {
-    const component = mount(<TextField options={["aa", "ab"]} />);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@'));
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('keyDown', { keyCode: KEY_ENTER });
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//     expect(component.find('textarea')).to.have.html().match(/@aa/);
+//   });
 
-    component.find('textarea').simulate('keyDown', { keyCode: KEY_DOWN });
-    component.find('textarea').simulate('keyDown', { keyCode: KEY_UP });
+//   it('press down => make next list item active', () => {
+//     const component = mount(<TextField options={["aa", "az"]} />);
 
-    expect(component.find('.active')).to.have.html().match(/a.*?>a</);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-  it('press down on last elen => make first list item active', () => {
-    const component = mount(<TextField options={["aa", "ab"]} />);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@'));
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('keyDown', { keyCode: KEY_DOWN });
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//     expect(component.find('.active')).to.have.html().match(/a.*?>z</);
+//   });
 
-    component.find('textarea').simulate('keyDown', { keyCode: KEY_DOWN });
-    component.find('textarea').simulate('keyDown', { keyCode: KEY_DOWN });
-    component.find('textarea').simulate('keyDown', { keyCode: KEY_DOWN });
+//   it('press up => make prev list item active', () => {
+//     const component = mount(<TextField options={["aa", "ab"]} />);
 
-    expect(component.find('.active')).to.have.html().match(/a.*?>a</);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-  it('mouse over second elem => second elem is active', () => {
-    const component = mount(<TextField options={["aa", "ab"]} />);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@'));
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('keyDown', { keyCode: KEY_DOWN });
+//     component.find('textarea').simulate('keyDown', { keyCode: KEY_UP });
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//     expect(component.find('.active')).to.have.html().match(/a.*?>a</);
+//   });
 
-    component.find('li').last().simulate('mouseEnter');
+//   it('press down on last elen => make first list item active', () => {
+//     const component = mount(<TextField options={["aa", "ab"]} />);
 
-    expect(component.find('.active')).to.have.html().match(/a.*?>b</);
-  });
-});
+//     component.find('textarea').simulate('change', createOnChangeEvent('@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-describe('different key events', () => {
-  it('hide options if trigger is deleted', () => {
-    const component = mount(<TextField options={["aa", "ab"]} />);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('textarea').simulate('keyDown', { keyCode: KEY_DOWN });
+//     component.find('textarea').simulate('keyDown', { keyCode: KEY_DOWN });
+//     component.find('textarea').simulate('keyDown', { keyCode: KEY_DOWN });
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//     expect(component.find('.active')).to.have.html().match(/a.*?>a</);
+//   });
 
-    component.find('textarea').simulate('change', createOnChangeEvent(''));
+//   it('mouse over second elem => second elem is active', () => {
+//     const component = mount(<TextField options={["aa", "ab"]} />);
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@'));
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-  it('hide options if escape pressed', () => {
-    const component = mount(<TextField options={["aa", "ab"]} />);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     component.find('li').last().simulate('mouseEnter');
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//     expect(component.find('.active')).to.have.html().match(/a.*?>b</);
+//   });
+// });
 
-    component.find('textarea').simulate('keyDown', { keyCode:  KEY_ESCAPE });
+// describe('different key events', () => {
+//   it('hide options if trigger is deleted', () => {
+//     const component = mount(<TextField options={["aa", "ab"]} />);
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-  it('other keyDown events are propagated if helper not visible', () => {
-    const handleKeyDown = spy();
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
 
-    const component = mount(<TextField options={["aa", "ab"]} onKeyDown={handleKeyDown} />);
+//     component.find('textarea').simulate('change', createOnChangeEvent(''));
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//   });
 
-    component.find('textarea').simulate('keyDown', { keyCode: 55 });
+//   it('hide options if escape pressed', () => {
+//     const component = mount(<TextField options={["aa", "ab"]} />);
 
-    expect(handleKeyDown.calledOnce).to.equal(true);
-  });
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
 
-  it('other keyDown events are propagated if helper is visible', () => {
-    const handleKeyDown = spy();
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
 
-    const component = mount(<TextField options={["aa", "ab"]} onKeyDown={handleKeyDown} />);
+//     component.find('textarea').simulate('keyDown', { keyCode:  KEY_ESCAPE });
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
+//   });
 
-    expect(component.find('.react-autocomplete-input')).to.have.length(1);
+//   it('other keyDown events are propagated if helper not visible', () => {
+//     const handleKeyDown = spy();
 
-    component.find('textarea').simulate('keyDown', { keyCode: 55 });
+//     const component = mount(<TextField options={["aa", "ab"]} onKeyDown={handleKeyDown} />);
 
-    expect(handleKeyDown.calledOnce).to.equal(true);
-  });
-});
+//     expect(component.find('.react-autocomplete-input')).to.have.length(0);
 
-describe('updating props', () => {
-  it('option list is updated if props value is updated', () => {
-    const component = mount(<TextField options={["aa", "ab"]} />);
+//     component.find('textarea').simulate('keyDown', { keyCode: 55 });
 
-    component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+//     expect(handleKeyDown.calledOnce).to.equal(true);
+//   });
 
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(2);
+//   it('other keyDown events are propagated if helper is visible', () => {
+//     const handleKeyDown = spy();
 
-    component.setProps({ options: ["aa", "ab", "ac"] });
+//     const component = mount(<TextField options={["aa", "ab"]} onKeyDown={handleKeyDown} />);
 
-    expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
-  });
-});
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+
+//     expect(component.find('.react-autocomplete-input')).to.have.length(1);
+
+//     component.find('textarea').simulate('keyDown', { keyCode: 55 });
+
+//     expect(handleKeyDown.calledOnce).to.equal(true);
+//   });
+// });
+
+// describe('updating props', () => {
+//   it('option list is updated if props value is updated', () => {
+//     const component = mount(<TextField options={["aa", "ab"]} />);
+
+//     component.find('textarea').simulate('change', createOnChangeEvent('@a'));
+
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(2);
+
+//     component.setProps({ options: ["aa", "ab", "ac"] });
+
+//     expect(component.find('.react-autocomplete-input > li')).to.have.length(3);
+//   });
+// });
