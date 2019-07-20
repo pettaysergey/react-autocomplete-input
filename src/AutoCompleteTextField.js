@@ -89,6 +89,7 @@ class AutocompleteTextField extends React.Component {
   }
 
   componentDidMount() {
+    console.log("CUSTOM");
     const { helperVisible, showSuggestions } = this.state;
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("keydown", event => {
