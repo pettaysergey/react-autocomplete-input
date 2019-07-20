@@ -1,24 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { findDOMNode } from 'react-dom';
-import getCaretCoordinates from 'textarea-caret';
-import getInputSelection, { setCaretPosition } from 'get-input-selection';
-import './AutoCompleteTextField.css';
+import React from "react";
+import PropTypes from "prop-types";
+import { findDOMNode } from "react-dom";
+import getCaretCoordinates from "textarea-caret";
+import getInputSelection, { setCaretPosition } from "get-input-selection";
+import "./AutoCompleteTextField.css";
 
-const KEY_UP = 38;
-const KEY_DOWN = 40;
-const KEY_RETURN = 13;
-const KEY_ENTER = 14;
 const KEY_ESCAPE = 27;
 
 const OPTION_LIST_Y_OFFSET = 10;
 const OPTION_LIST_MIN_WIDTH = 100;
 
 const propTypes = {
-  Component: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.func,
-  ]),
+  Component: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   defaultValue: PropTypes.string,
   disabled: PropTypes.bool,
   maxOptions: PropTypes.number,
@@ -36,29 +29,29 @@ const propTypes = {
   trigger: PropTypes.string,
   value: PropTypes.string,
   offsetX: PropTypes.number,
-  offsetY: PropTypes.number,
+  offsetY: PropTypes.number
 };
 
 const defaultProps = {
-  Component: 'textarea',
-  defaultValue: '',
+  Component: "textarea",
+  defaultValue: "",
   disabled: false,
   maxOptions: 6,
-  onBlur: () => { },
-  onChange: () => { },
-  onKeyDown: () => { },
-  onRequestOptions: () => { },
+  onBlur: () => {},
+  onChange: () => {},
+  onKeyDown: () => {},
+  onRequestOptions: () => {},
   options: [],
-  regex: '^[A-Za-z0-9\\-_]+$',
+  regex: "^[A-Za-z0-9-А-Яа-я\\-_]+$",
   matchAny: false,
   minChars: 0,
   requestOnlyIfNoOptions: true,
-  spaceRemovers: [',', '.', '!', '?'],
-  spacer: ' ',
-  trigger: '@',
+  spaceRemovers: [",", ".", "!", "?"],
+  spacer: " ",
+  trigger: "@",
   offsetX: 0,
   offsetY: 0,
-  value: null,
+  value: null
 };
 
 class AutocompleteTextField extends React.Component {
@@ -85,6 +78,10 @@ class AutocompleteTextField extends React.Component {
       selection: 0,
       top: 0,
       value: null,
+      // custom dropdown
+      activeSuggestion: 0,
+      filteredSuggestions: [],
+      showSuggestions: false
     };
 
     this.recentValue = props.defaultValue;
@@ -92,7 +89,20 @@ class AutocompleteTextField extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener('resize', this.handleResize);
+    const { helperVisible, showSuggestions } = this.state;
+    window.addEventListener("resize", this.handleResize);
+    window.addEventListener("keydown", event => {
+      if (helperVisible || showSuggestions) {
+        switch (event.keyCode) {
+          case KEY_ESCAPE:
+            event.preventDefault();
+            this.setState({ helperVisible: false, showSuggestions: false });
+            break;
+          default:
+            break;
+        }
+      }
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -105,7 +115,7 @@ class AutocompleteTextField extends React.Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener("resize", this.handleResize);
   }
 
   getMatch(str, caret, providedOptions) {
@@ -122,7 +132,8 @@ class AutocompleteTextField extends React.Component {
       if (triggerLength > 0) {
         const triggerIdx = triggerMatch ? i : i - triggerLength + 1;
 
-        if (triggerIdx < 0) { // out of input
+        if (triggerIdx < 0) {
+          // out of input
           return null;
         }
 
@@ -134,19 +145,21 @@ class AutocompleteTextField extends React.Component {
           return null;
         }
       } else {
-        if (match && i > 0) { // find first non-matching character or begin of input
+        if (match && i > 0) {
+          // find first non-matching character or begin of input
           continue;
         }
         matchStart = i === 0 && match ? 0 : i + 1;
 
-        if (caret - matchStart === 0) { // matched slug is empty
+        if (caret - matchStart === 0) {
+          // matched slug is empty
           return null;
         }
       }
 
       if (matchStart >= 0) {
         const matchedSlug = str.substring(matchStart, caret);
-        const options = providedOptions.filter((slug) => {
+        const options = providedOptions.filter(slug => {
           const idx = slug.toLowerCase().indexOf(matchedSlug);
           return idx !== -1 && (matchAny || idx === 0);
         });
@@ -175,18 +188,11 @@ class AutocompleteTextField extends React.Component {
   }
 
   handleChange(e) {
-    const {
-      onChange,
-      options,
-      spaceRemovers,
-      spacer,
-      value,
-    } = this.props;
-
+    const { onChange, options, spaceRemovers, spacer, value } = this.props;
     const old = this.recentValue;
     const str = e.target.value;
     const caret = getInputSelection(e.target).end;
-
+    this.customOnChange(str);
     if (!str.length) {
       this.setState({ helperVisible: false });
     }
@@ -200,17 +206,29 @@ class AutocompleteTextField extends React.Component {
     }
 
     // '@wonderjenny ,|' -> '@wonderjenny, |'
-    if (this.enableSpaceRemovers && spaceRemovers.length && str.length > 2 && spacer.length) {
+    if (
+      this.enableSpaceRemovers &&
+      spaceRemovers.length &&
+      str.length > 2 &&
+      spacer.length
+    ) {
       for (let i = 0; i < Math.max(old.length, str.length); ++i) {
         if (old[i] !== str[i]) {
           if (
-            i >= 2
-            && str[i - 1] === spacer
-            && spaceRemovers.indexOf(str[i - 2]) === -1
-            && spaceRemovers.indexOf(str[i]) !== -1
-            && this.getMatch(str.substring(0, i - 2).toLowerCase(), caret - 3, options)
+            i >= 2 &&
+            str[i - 1] === spacer &&
+            spaceRemovers.indexOf(str[i - 2]) === -1 &&
+            spaceRemovers.indexOf(str[i]) !== -1 &&
+            this.getMatch(
+              str.substring(0, i - 2).toLowerCase(),
+              caret - 3,
+              options
+            )
           ) {
-            const newValue = (`${str.slice(0, i - 1)}${str.slice(i, i + 1)}${str.slice(i - 1, i)}${str.slice(i + 1)}`);
+            const newValue = `${str.slice(0, i - 1)}${str.slice(
+              i,
+              i + 1
+            )}${str.slice(i - 1, i)}${str.slice(i + 1)}`;
 
             this.updateCaretPosition(i + 1);
             findDOMNode(this.refInput).value = newValue;
@@ -218,7 +236,6 @@ class AutocompleteTextField extends React.Component {
             if (!value) {
               this.setState({ value: newValue });
             }
-
             return onChange(newValue);
           }
 
@@ -238,8 +255,23 @@ class AutocompleteTextField extends React.Component {
     return onChange(e.target.value);
   }
 
+  // for customDropdown
+  customOnChange = value => {
+    const { options } = this.props;
+    const filteredSuggestions = options.filter(
+      suggestion => suggestion.toLowerCase().indexOf(value.toLowerCase()) > -1
+    );
+
+    this.setState({
+      activeSuggestion: 0,
+      filteredSuggestions,
+      showSuggestions: true,
+      value
+    });
+  };
+
   handleKeyDown(event) {
-    const { helperVisible, options, selection } = this.state;
+    const { helperVisible } = this.state;
     const { onKeyDown } = this.props;
 
     if (helperVisible) {
@@ -247,19 +279,6 @@ class AutocompleteTextField extends React.Component {
         case KEY_ESCAPE:
           event.preventDefault();
           this.resetHelper();
-          break;
-        case KEY_UP:
-          event.preventDefault();
-          this.setState({ selection: ((options.length + selection) - 1) % options.length });
-          break;
-        case KEY_DOWN:
-          event.preventDefault();
-          this.setState({ selection: (selection + 1) % options.length });
-          break;
-        case KEY_ENTER:
-        case KEY_RETURN:
-          event.preventDefault();
-          this.handleSelection(selection);
           break;
         default:
           onKeyDown(event);
@@ -295,13 +314,24 @@ class AutocompleteTextField extends React.Component {
     this.enableSpaceRemovers = true;
   }
 
+  customClick = (e, index) => {
+    this.setState({
+      activeSuggestion: 0,
+      filteredSuggestions: [],
+      showSuggestions: false
+      // value: e.currentTarget.innerText
+    });
+    this.props.onChange(e.currentTarget.innerText);
+  };
+
   updateCaretPosition(caret) {
-    this.setState({ caret }, () => setCaretPosition(findDOMNode(this.refInput), caret));
+    this.setState({ caret }, () =>
+      setCaretPosition(findDOMNode(this.refInput), caret)
+    );
   }
 
   updateHelper(str, caret, options) {
     const input = findDOMNode(this.refInput);
-
     const slug = this.getMatch(str.toLowerCase(), caret, options);
 
     if (slug) {
@@ -311,26 +341,22 @@ class AutocompleteTextField extends React.Component {
       const top = caretPos.top + input.offsetTop;
       const left = Math.min(
         caretPos.left + input.offsetLeft - OPTION_LIST_Y_OFFSET,
-        input.offsetLeft + rect.width - OPTION_LIST_MIN_WIDTH,
+        input.offsetLeft + rect.width - OPTION_LIST_MIN_WIDTH
       );
 
       const { minChars, onRequestOptions, requestOnlyIfNoOptions } = this.props;
 
       if (
-        slug.matchLength >= minChars
-        && (
-          slug.options.length > 1
-          || (
-            slug.options.length === 1
-            && slug.options[0].length !== slug.matchLength
-          )
-        )
+        slug.matchLength >= minChars &&
+        (slug.options.length > 1 ||
+          (slug.options.length === 1 &&
+            slug.options[0].length !== slug.matchLength))
       ) {
         this.setState({
           helperVisible: true,
           top,
           left,
-          ...slug,
+          ...slug
         });
       } else {
         if (!requestOnlyIfNoOptions || !slug.options.length) {
@@ -357,7 +383,7 @@ class AutocompleteTextField extends React.Component {
       options,
       selection,
       top,
-      value,
+      value
     } = this.state;
 
     if (!helperVisible) {
@@ -379,14 +405,20 @@ class AutocompleteTextField extends React.Component {
     const optionNumber = maxOptions === 0 ? options.length : maxOptions;
 
     const helperOptions = options.slice(0, optionNumber).map((val, idx) => {
-      const highlightStart = val.toLowerCase().indexOf(value.substr(matchStart, matchLength).toLowerCase());
+      const highlightStart = val
+        .toLowerCase()
+        .indexOf(value.substr(matchStart, matchLength).toLowerCase());
 
       return (
         <li
-          className={idx === selection ? 'active' : null}
+          className={idx === selection ? "active" : null}
           key={val}
-          onClick={() => { this.handleSelection(idx); }}
-          onMouseEnter={() => { this.setState({ selection: idx }); }}
+          onClick={() => {
+            this.handleSelection(idx);
+          }}
+          onMouseEnter={() => {
+            this.setState({ selection: idx });
+          }}
         >
           {val.slice(0, highlightStart)}
           <strong>{val.substr(highlightStart, matchLength)}</strong>
@@ -396,7 +428,10 @@ class AutocompleteTextField extends React.Component {
     });
 
     return (
-      <ul className="react-autocomplete-input" style={{ left: left + offsetX, top: top + offsetY }}>
+      <ul
+        className="react-autocomplete-input"
+        style={{ left: left + offsetX, top: top + offsetY }}
+      >
         {helperOptions}
       </ul>
     );
@@ -412,20 +447,57 @@ class AutocompleteTextField extends React.Component {
       ...rest
     } = this.props;
 
-    const { value: stateValue } = this.state;
+    const {
+      value: stateValue, // customDropdown
+      activeSuggestion,
+      filteredSuggestions,
+      showSuggestions
+    } = this.state;
 
     const propagated = Object.assign({}, rest);
-    Object.keys(this.constructor.propTypes).forEach((k) => { delete propagated[k]; });
+    Object.keys(this.constructor.propTypes).forEach(k => {
+      delete propagated[k];
+    });
 
-    let val = '';
+    let val = "";
 
-    if (typeof value !== 'undefined' && value !== null) {
+    if (typeof value !== "undefined" && value !== null) {
       val = value;
     } else if (stateValue) {
       val = stateValue;
     } else if (defaultValue) {
       val = defaultValue;
     }
+
+    //customDropdown
+    let suggestionsListComponent = () => {
+      if (showSuggestions && value) {
+        if (filteredSuggestions.length) {
+          return (
+            <ul className="react-autocomplete-input">
+              {filteredSuggestions.map((suggestion, index) => {
+                let className;
+
+                // Flag the active suggestion with a class
+                if (index === activeSuggestion) {
+                  className = "active";
+                }
+
+                return (
+                  <li
+                    className={className}
+                    key={suggestion}
+                    onClick={e => this.customClick(e, index)}
+                  >
+                    {suggestion}
+                  </li>
+                );
+              })}
+            </ul>
+          );
+        }
+      }
+    };
 
     return (
       <span>
@@ -434,11 +506,14 @@ class AutocompleteTextField extends React.Component {
           onBlur={onBlur}
           onChange={this.handleChange}
           onKeyDown={this.handleKeyDown}
-          ref={(c) => { this.refInput = c; }}
+          ref={c => {
+            this.refInput = c;
+          }}
           value={val}
           {...propagated}
         />
         {this.renderAutocompleteList()}
+        {suggestionsListComponent()}
       </span>
     );
   }

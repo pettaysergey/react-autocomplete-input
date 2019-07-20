@@ -19,6 +19,7 @@
     "webpack": "^3.12.0"
   },
   "dependencies": {
+    "nearley": "^2.16.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0"
   }
