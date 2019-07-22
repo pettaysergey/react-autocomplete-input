@@ -486,7 +486,7 @@ class AutocompleteTextField extends React.Component {
       return (
         <li
           className={idx === selection ? "active" : null}
-          key={val}
+          key={`${val}${idx}`}
           onClick={() => {
             this.handleSelection(idx);
           }}
@@ -560,7 +560,7 @@ class AutocompleteTextField extends React.Component {
                 return (
                   <li
                     className={className}
-                    key={suggestion}
+                    key={`${suggestion}${index}`}
                     onClick={e => this.customClick(e)}
                   >
                     {suggestion}
