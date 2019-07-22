@@ -325,6 +325,7 @@ class AutocompleteTextField extends React.Component {
       // value: e.currentTarget.innerText
     });
     this.props.onChange(e.currentTarget.innerText);
+    this.refInput.focus();
   }
 
   updateCaretPosition(caret) {
