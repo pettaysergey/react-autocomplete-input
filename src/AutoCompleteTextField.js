@@ -278,7 +278,14 @@ class AutocompleteTextField extends React.Component {
   }
 
   handleKeyDown(event) {
-    const { helperVisible } = this.state;
+    const {
+      helperVisible,
+      options,
+      selection,
+      showSuggestions,
+      activeSuggestion,
+      filteredSuggestions
+    } = this.state;
     const { onKeyDown } = this.props;
 
     if (helperVisible) {
