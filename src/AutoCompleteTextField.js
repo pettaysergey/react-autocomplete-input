@@ -70,6 +70,7 @@ class AutocompleteTextField extends React.Component {
     this.renderAutocompleteList = this.renderAutocompleteList.bind(this);
     this.customOnChange = this.customOnChange.bind(this);
     this.customClick = this.customClick.bind(this);
+    this.setErrorClick = this.setErrorClick.bind(this);
 
     this.state = {
       helperVisible: false,
@@ -328,14 +329,14 @@ class AutocompleteTextField extends React.Component {
     this.refInput.focus();
   }
 
-  setErrorClick = () => {
+  setErrorClick() {
     const { column } = this.props;
     console.log(column);
     if (column) {
       this.refInput.selectionStart = column;
       this.refInput.selectionEnd = column;
     }
-  };
+  }
 
   updateCaretPosition(caret) {
     this.setState({ caret }, () =>
