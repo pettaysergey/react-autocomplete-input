@@ -5,6 +5,10 @@ import getCaretCoordinates from "textarea-caret";
 import getInputSelection, { setCaretPosition } from "get-input-selection";
 import "./AutoCompleteTextField.css";
 
+const KEY_UP = 38;
+const KEY_DOWN = 40;
+const KEY_RETURN = 13;
+const KEY_ENTER = 14;
 const KEY_ESCAPE = 27;
 
 const OPTION_LIST_Y_OFFSET = 10;
@@ -92,7 +96,6 @@ class AutocompleteTextField extends React.Component {
   }
 
   componentDidMount() {
-    console.log("CUSTOM");
     const { helperVisible, showSuggestions } = this.state;
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("keydown", event => {
@@ -284,12 +287,63 @@ class AutocompleteTextField extends React.Component {
           event.preventDefault();
           this.resetHelper();
           break;
+        case KEY_UP:
+          event.preventDefault();
+          this.setState({
+            selection: (options.length + selection - 1) % options.length
+          });
+          break;
+        case KEY_DOWN:
+          event.preventDefault();
+          this.setState({ selection: (selection + 1) % options.length });
+          break;
+        case KEY_ENTER:
+        case KEY_RETURN:
+          event.preventDefault();
+          this.handleSelection(selection);
+          break;
         default:
           onKeyDown(event);
           break;
       }
     } else {
       onKeyDown(event);
+    }
+    // for custom dropdown
+    if (showSuggestions) {
+      switch (event.keyCode) {
+        case KEY_RETURN:
+          if (filteredSuggestions[activeSuggestion] && this.state.value) {
+            this.setState({
+              activeSuggestion: 0,
+              showSuggestions: false,
+              filteredSuggestions: []
+            });
+            this.props.onChange(filteredSuggestions[activeSuggestion]);
+            this.refInput.focus();
+          }
+          break;
+        case KEY_DOWN:
+          if (activeSuggestion - 1 === filteredSuggestions.length) {
+            return;
+          }
+          if (activeSuggestion === filteredSuggestions.length - 1) {
+            this.setState({ activeSuggestion: 0 });
+            return;
+          }
+          this.setState({ activeSuggestion: activeSuggestion + 1 });
+          break;
+        case KEY_UP:
+          if (activeSuggestion === 0) {
+            this.setState({ activeSuggestion: filteredSuggestions.length - 1 });
+            return;
+          }
+          if (activeSuggestion)
+            this.setState({ activeSuggestion: activeSuggestion - 1 });
+          break;
+        default:
+          break;
+      }
     }
   }
 
@@ -331,7 +385,6 @@ class AutocompleteTextField extends React.Component {
 
   setErrorClick() {
     const { column } = this.props;
-    console.log(column);
     if (column) {
       this.refInput.selectionStart = column;
       this.refInput.selectionEnd = column;
