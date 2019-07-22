@@ -328,6 +328,15 @@ class AutocompleteTextField extends React.Component {
     this.refInput.focus();
   }
 
+  setErrorClick = () => {
+    const { column } = this.props;
+    console.log(column);
+    if (column) {
+      this.refInput.selectionStart = column;
+      this.refInput.selectionEnd = column;
+    }
+  };
+
   updateCaretPosition(caret) {
     this.setState({ caret }, () =>
       setCaretPosition(findDOMNode(this.refInput), caret)
@@ -514,6 +523,7 @@ class AutocompleteTextField extends React.Component {
             this.refInput = c;
           }}
           value={val}
+          onClick={this.setErrorClick}
           {...propagated}
         />
         {this.renderAutocompleteList()}
