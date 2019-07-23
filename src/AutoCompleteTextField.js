@@ -72,6 +72,7 @@ class AutocompleteTextField extends React.Component {
     this.updateHelper = this.updateHelper.bind(this);
     this.resetHelper = this.resetHelper.bind(this);
     this.renderAutocompleteList = this.renderAutocompleteList.bind(this);
+    this.scrollList = this.scrollList.bind(this);
     this.customOnChange = this.customOnChange.bind(this);
     this.customClick = this.customClick.bind(this);
     this.setErrorClick = this.setErrorClick.bind(this);
@@ -88,7 +89,8 @@ class AutocompleteTextField extends React.Component {
       // custom dropdown
       activeSuggestion: 0,
       filteredSuggestions: [],
-      showSuggestions: false
+      showSuggestions: false,
+      scrollValue: 0
     };
 
     this.recentValue = props.defaultValue;
@@ -297,13 +299,18 @@ class AutocompleteTextField extends React.Component {
           break;
         case KEY_UP:
           event.preventDefault();
-          this.setState({
-            selection: (options.length + selection - 1) % options.length
-          });
+          this.setState(
+            {
+              selection: (options.length + selection - 1) % options.length
+            },
+            () => this.scrollList("up")
+          );
           break;
         case KEY_DOWN:
           event.preventDefault();
-          this.setState({ selection: (selection + 1) % options.length });
+          this.setState({ selection: (selection + 1) % options.length }, () =>
+            this.scrollList("down")
+          );
           break;
         case KEY_ENTER:
         case KEY_RETURN:
@@ -317,6 +324,7 @@ class AutocompleteTextField extends React.Component {
     } else {
       onKeyDown(event);
     }
+
     // for custom dropdown
     if (showSuggestions) {
       switch (event.keyCode) {
@@ -351,6 +359,45 @@ class AutocompleteTextField extends React.Component {
           break;
         default:
           break;
+      }
+    }
+  }
+
+  scrollList(duration) {
+    const { selection, options } = this.state;
+    const list = this.refList;
+    const listHeight = list.getBoundingClientRect().height;
+    const item = list.querySelector(".active");
+    const itemTop = item.getBoundingClientRect().top;
+    const itemHeight = item.getBoundingClientRect().height;
+
+    if (duration === "down") {
+      if (selection === 0) {
+        this.setState(
+          { scrollValue: 0 },
+          () => (list.scrollTop = this.state.scrollValue)
+        );
+      } else {
+        if (itemTop >= listHeight) {
+          this.setState(
+            { scrollValue: this.state.scrollValue + itemHeight },
+            () => (list.scrollTop = this.state.scrollValue)
+          );
+        }
+      }
+    } else {
+      if (selection === options.length - 1) {
+        this.setState(
+          { scrollValue: listHeight },
+          () => (list.scrollTop = this.state.scrollValue)
+        );
+      } else {
+        if (itemTop < 0) {
+          this.setState(
+            { scrollValue: this.state.scrollValue - itemHeight },
+            () => (list.scrollTop = this.state.scrollValue)
+          );
+        }
       }
     }
   }
@@ -487,7 +534,7 @@ class AutocompleteTextField extends React.Component {
       return (
         <li
           className={idx === selection ? "active" : null}
-          key={`${val}${idx}`}
+          key={val}
           onClick={() => {
             this.handleSelection(idx);
           }}
@@ -506,6 +553,9 @@ class AutocompleteTextField extends React.Component {
       <ul
         className="react-autocomplete-input"
         style={{ left: left + offsetX, top: top + offsetY }}
+        ref={c => {
+          this.refList = c;
+        }}
       >
         {helperOptions}
       </ul>
@@ -561,8 +611,8 @@ class AutocompleteTextField extends React.Component {
                 return (
                   <li
                     className={className}
-                    key={`${suggestion}${index}`}
-                    onClick={e => this.customClick(e)}
+                    key={suggestion}
+                    onClick={e => this.customClick(e, index)}
                   >
                     {suggestion}
                   </li>
@@ -585,6 +635,7 @@ class AutocompleteTextField extends React.Component {
             this.refInput = c;
           }}
           value={val}
+          // custom click for set cursor if has error
           onClick={this.setErrorClick}
           {...propagated}
         />
