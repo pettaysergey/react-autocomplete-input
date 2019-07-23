@@ -96,10 +96,11 @@ class AutocompleteTextField extends React.Component {
   }
 
   componentDidMount() {
-    const { helperVisible, showSuggestions } = this.state;
+    this.refInput.focus();
+    this.refInput.setSelectionRange(2, 5);
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("keydown", event => {
-      if (helperVisible || showSuggestions) {
+      if (this.state.helperVisible || this.state.showSuggestions) {
         switch (event.keyCode) {
           case KEY_ESCAPE:
             event.preventDefault();
