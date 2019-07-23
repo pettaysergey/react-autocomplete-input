@@ -370,7 +370,10 @@ class AutocompleteTextField extends React.Component {
     const item = list.querySelector(".active");
     const itemTop = item.getBoundingClientRect().top;
     const itemHeight = item.getBoundingClientRect().height;
-
+    const inputBLock =
+      this.refInput.getBoundingClientRect().top +
+      this.refInput.getBoundingClientRect().height;
+    // down
     if (duration === "down") {
       if (selection === 0) {
         this.setState(
@@ -378,21 +381,23 @@ class AutocompleteTextField extends React.Component {
           () => (list.scrollTop = this.state.scrollValue)
         );
       } else {
-        if (itemTop >= listHeight) {
+        if (itemTop >= listHeight + inputBLock) {
           this.setState(
             { scrollValue: this.state.scrollValue + itemHeight },
             () => (list.scrollTop = this.state.scrollValue)
           );
         }
       }
-    } else {
+    }
+    //top
+    else {
       if (selection === options.length - 1) {
         this.setState(
-          { scrollValue: listHeight },
+          { scrollValue: list.scrollHeight },
           () => (list.scrollTop = this.state.scrollValue)
         );
       } else {
-        if (itemTop < 0) {
+        if (itemTop <= inputBLock) {
           this.setState(
             { scrollValue: this.state.scrollValue - itemHeight },
             () => (list.scrollTop = this.state.scrollValue)
@@ -534,13 +539,13 @@ class AutocompleteTextField extends React.Component {
       return (
         <li
           className={idx === selection ? "active" : null}
-          key={val}
+          key={val + idx}
           onClick={() => {
             this.handleSelection(idx);
           }}
-          onMouseEnter={() => {
-            this.setState({ selection: idx });
-          }}
+          // onMouseEnter={() => {
+          //   this.setState({ selection: idx });
+          // }}
         >
           {val.slice(0, highlightStart)}
           <strong>{val.substr(highlightStart, matchLength)}</strong>
@@ -611,7 +616,7 @@ class AutocompleteTextField extends React.Component {
                 return (
                   <li
                     className={className}
-                    key={suggestion}
+                    key={suggestion + index}
                     onClick={e => this.customClick(e, index)}
                   >
                     {suggestion}
