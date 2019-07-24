@@ -329,6 +329,7 @@ class AutocompleteTextField extends React.Component {
     if (showSuggestions) {
       switch (event.keyCode) {
         case KEY_RETURN:
+          event.preventDefault();
           if (filteredSuggestions[activeSuggestion] && this.state.value) {
             this.setState({
               activeSuggestion: 0,
