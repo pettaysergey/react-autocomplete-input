@@ -275,6 +275,11 @@ class AutocompleteTextField extends React.Component {
       suggestion => suggestion.toLowerCase().indexOf(value.toLowerCase()) > -1
     );
 
+    if (!value) {
+      this.setState({ filteredSuggestions: [] });
+      return;
+    }
+
     this.setState({
       activeSuggestion: 0,
       filteredSuggestions,
@@ -332,7 +337,7 @@ class AutocompleteTextField extends React.Component {
     if (showSuggestions) {
       switch (event.keyCode) {
         case KEY_RETURN:
-          if (filteredSuggestions.length === 0) {
+          if (filteredSuggestions.length !== 0 || !this.state.value) {
             event.preventDefault();
           }
           if (filteredSuggestions[activeSuggestion] && this.state.value) {
