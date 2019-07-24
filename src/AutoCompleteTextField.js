@@ -101,7 +101,7 @@ class AutocompleteTextField extends React.Component {
   }
 
   componentDidMount() {
-    // this.refInput.focus();
+    this.refInput.focus();
     // this.refInput.setSelectionRange(2, 5);
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("keydown", event => {
@@ -278,7 +278,7 @@ class AutocompleteTextField extends React.Component {
     this.setState({
       activeSuggestion: 0,
       filteredSuggestions,
-      showSuggestions: true,
+      showSuggestions: filteredSuggestions.length > 0 ? true : false,
       value
     });
   }
@@ -332,7 +332,9 @@ class AutocompleteTextField extends React.Component {
     if (showSuggestions) {
       switch (event.keyCode) {
         case KEY_RETURN:
-          event.preventDefault();
+          if (filteredSuggestions.length === 0) {
+            event.preventDefault();
+          }
           if (filteredSuggestions[activeSuggestion] && this.state.value) {
             this.setState({
               activeSuggestion: 0,
