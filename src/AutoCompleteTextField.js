@@ -393,7 +393,7 @@ class AutocompleteTextField extends React.Component {
     else {
       if (selection === options.length - 1) {
         this.setState(
-          { scrollValue: list.scrollHeight },
+          { scrollValue: itemHeight * options.length - listHeight + 4 },
           () => (list.scrollTop = this.state.scrollValue)
         );
       } else {
