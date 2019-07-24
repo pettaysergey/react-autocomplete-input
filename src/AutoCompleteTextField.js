@@ -573,12 +573,14 @@ class AutocompleteTextField extends React.Component {
 
   setFocusedFlagHandler(value) {
     const { setFocusedFlag } = this.props;
-    if (value === "focus") {
-      setFocusedFlag(true);
-    } else {
-      setFocusedFlag(false);
-      this.setState({ helperVisible: false, showSuggestions: false });
-    }
+    setTimeout(() => {
+      if (value === "focus") {
+        setFocusedFlag(true);
+      } else {
+        setFocusedFlag(false);
+        this.setState({ helperVisible: false, showSuggestions: false });
+      }
+    }, 10);
   }
 
   render() {
