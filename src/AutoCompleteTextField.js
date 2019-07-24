@@ -33,7 +33,8 @@ const propTypes = {
   trigger: PropTypes.string,
   value: PropTypes.string,
   offsetX: PropTypes.number,
-  offsetY: PropTypes.number
+  offsetY: PropTypes.number,
+  setFocusedFlag: PropTypes.func
 };
 
 const defaultProps = {
@@ -45,6 +46,7 @@ const defaultProps = {
   onChange: () => {},
   onKeyDown: () => {},
   onRequestOptions: () => {},
+  setFocusedFlag: () => {},
   options: [],
   regex: "^[A-Za-z0-9-А-Яа-я\\-_]+$",
   matchAny: false,
@@ -76,6 +78,7 @@ class AutocompleteTextField extends React.Component {
     this.customOnChange = this.customOnChange.bind(this);
     this.customClick = this.customClick.bind(this);
     this.setErrorClick = this.setErrorClick.bind(this);
+    this.setFocusedFlagHandler = this.setFocusedFlagHandler.bind(this);
 
     this.state = {
       helperVisible: false,
@@ -98,8 +101,8 @@ class AutocompleteTextField extends React.Component {
   }
 
   componentDidMount() {
-    this.refInput.focus();
-    this.refInput.setSelectionRange(2, 5);
+    // this.refInput.focus();
+    // this.refInput.setSelectionRange(2, 5);
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("keydown", event => {
       if (this.state.helperVisible || this.state.showSuggestions) {
@@ -568,6 +571,11 @@ class AutocompleteTextField extends React.Component {
     );
   }
 
+  setFocusedFlagHandler(value) {
+    const { setFocusedFlag } = this.props;
+    value === "focus" ? setFocusedFlag(true) : setFocusedFlag(false);
+  }
+
   render() {
     const {
       Component,
@@ -634,7 +642,8 @@ class AutocompleteTextField extends React.Component {
       <span>
         <Component
           disabled={disabled}
-          onBlur={onBlur}
+          onBlur={() => this.setFocusedFlagHandler("blur")}
+          onFocus={() => this.setFocusedFlagHandler("focus")}
           onChange={this.handleChange}
           onKeyDown={this.handleKeyDown}
           ref={c => {
