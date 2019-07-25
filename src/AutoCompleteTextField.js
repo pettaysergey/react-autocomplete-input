@@ -93,7 +93,8 @@ class AutocompleteTextField extends React.Component {
       activeSuggestion: 0,
       filteredSuggestions: [],
       showSuggestions: false,
-      scrollValue: 0
+      scrollValue: 0,
+      columnError: null
     };
 
     this.recentValue = props.defaultValue;
@@ -455,10 +456,12 @@ class AutocompleteTextField extends React.Component {
   }
 
   setErrorClick() {
+    const { columnError } = this.state;
     const { column } = this.props;
-    if (column) {
+    if (column && columnError !== column) {
       this.refInput.selectionStart = column;
       this.refInput.selectionEnd = column;
+      this.setState({ columnError: column });
     }
   }
 
