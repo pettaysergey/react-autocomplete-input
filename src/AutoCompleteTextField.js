@@ -79,6 +79,7 @@ class AutocompleteTextField extends React.Component {
     this.customClick = this.customClick.bind(this);
     this.setErrorClick = this.setErrorClick.bind(this);
     this.setFocusedFlagHandler = this.setFocusedFlagHandler.bind(this);
+    this.escapeSubscript = this.escapeSubscript.bind(this);
 
     this.state = {
       helperVisible: false,
@@ -105,18 +106,20 @@ class AutocompleteTextField extends React.Component {
     this.refInput.focus();
     // this.refInput.setSelectionRange(2, 5);
     window.addEventListener("resize", this.handleResize);
-    window.addEventListener("keydown", event => {
-      if (this.state.helperVisible || this.state.showSuggestions) {
-        switch (event.keyCode) {
-          case KEY_ESCAPE:
-            event.preventDefault();
-            this.setState({ helperVisible: false, showSuggestions: false });
-            break;
-          default:
-            break;
-        }
+    window.addEventListener("keydown", this.escapeSubscript);
+  }
+
+  escapeSubscript(event) {
+    if (this.state.helperVisible || this.state.showSuggestions) {
+      switch (event.keyCode) {
+        case KEY_ESCAPE:
+          event.preventDefault();
+          this.setState({ helperVisible: false, showSuggestions: false });
+          break;
+        default:
+          break;
       }
-    });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -130,6 +133,7 @@ class AutocompleteTextField extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener("keydown", this.escapeSubscript);
   }
 
   getMatch(str, caret, providedOptions) {
