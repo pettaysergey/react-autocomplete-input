@@ -594,7 +594,7 @@ class AutocompleteTextField extends React.Component {
         setFocusedFlag(false);
         this.setState({ helperVisible: false, showSuggestions: false });
       }
-    }, 10);
+    }, 1000);
   }
 
   render() {
@@ -648,6 +648,7 @@ class AutocompleteTextField extends React.Component {
                     className={className}
                     key={suggestion + index}
                     onClick={e => this.customClick(e, index)}
+                    onKeyDown={() => console.log("down")}
                   >
                     {suggestion}
                   </li>
