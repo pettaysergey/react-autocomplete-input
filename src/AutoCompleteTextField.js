@@ -594,7 +594,7 @@ class AutocompleteTextField extends React.Component {
         setFocusedFlag(false);
         this.setState({ helperVisible: false, showSuggestions: false });
       }
-    }, 1000);
+    }, 200);
   }
 
   render() {
