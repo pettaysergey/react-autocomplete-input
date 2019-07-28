@@ -220,7 +220,7 @@ class AutocompleteTextField extends React.Component {
     this.setState({ caret, value: e.target.value });
 
     if (!str.length || !caret) {
-      return onChange(e.target.value);
+      return onChange(e.target.value, this.refInput.selectionStart);
     }
 
     // '@wonderjenny ,|' -> '@wonderjenny, |'
@@ -254,7 +254,7 @@ class AutocompleteTextField extends React.Component {
             if (!value) {
               this.setState({ value: newValue });
             }
-            return onChange(newValue);
+            return onChange(newValue, this.refInput.selectionStart);
           }
 
           break;
@@ -270,7 +270,7 @@ class AutocompleteTextField extends React.Component {
       this.setState({ value: e.target.value });
     }
 
-    return onChange(e.target.value);
+    return onChange(e.target.value, this.refInput.selectionStart);
   }
 
   // for customDropdown
