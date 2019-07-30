@@ -460,12 +460,16 @@ class AutocompleteTextField extends React.Component {
   }
 
   setErrorClick() {
-    const { columnError } = this.state;
+    const { columnError, helperVisible } = this.state;
     const { column } = this.props;
     if (column && columnError !== column) {
       this.refInput.selectionStart = column;
       this.refInput.selectionEnd = column;
       this.setState({ columnError: column });
+    }
+    // close dropdown on click
+    if (helperVisible) {
+      this.setState({ helperVisible: false });
     }
   }
 
